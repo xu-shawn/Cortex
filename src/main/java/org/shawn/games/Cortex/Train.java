@@ -4,7 +4,7 @@ import java.util.*;
 
 import org.shawn.games.Cortex.DataLoader.DataLoader;
 import org.shawn.games.Cortex.Inputs.Unbucketed768;
-import org.shawn.games.Cortex.Network.SimpleNetwork;
+import org.shawn.games.Cortex.Network.*;
 
 import org.shawn.games.Cortex.LR.*;
 
@@ -13,7 +13,7 @@ public class Train
 	public static void main(String[] args)
 	{
 		DataLoader dl = new DataLoader("/t77.bin");
-		SimpleNetwork net = new SimpleNetwork();
+		SinglePerspective net = new SinglePerspective();
 
 		ArrayList<DataLoader.ConvertedData> testData = new ArrayList<>(10000);
 		LRScheduler lr = new ConstantLR(0.02f);
