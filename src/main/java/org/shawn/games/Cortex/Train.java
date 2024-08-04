@@ -1,5 +1,6 @@
 package org.shawn.games.Cortex;
 
+import java.io.*;
 import java.util.*;
 
 import org.shawn.games.Cortex.DataLoader.DataLoader;
@@ -44,6 +45,16 @@ public class Train
 
 				System.out.println("Superbatch " + i / 3000 + " Loss: " + test_loss);
 			}
+		}
+
+		try
+		{
+			DataOutputStream fileOutput = new DataOutputStream(new FileOutputStream("network.nnue"));
+			net.writeQuantized((short)255, (short)64, fileOutput);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
 		}
 	}
 

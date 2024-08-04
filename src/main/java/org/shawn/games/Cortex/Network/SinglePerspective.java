@@ -1,5 +1,7 @@
 package org.shawn.games.Cortex.Network;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -172,5 +174,34 @@ public class SinglePerspective
 		}
 
 		return error;
+	}
+
+	private static short quantizeAndReverseEndianness(final float v, final short quantizationFactor)
+	{
+		short quantized = (short) (v * quantizationFactor);
+		return Short.reverseBytes(quantized);
+	}
+
+	public void writeQuantized(final short QA, final short QB, DataOutputStream file) throws IOException
+	{
+		for (int i = 0; i < 768; i++)
+		{
+			for (int j = 0; j < HIDDEN_LAYER; j++)
+			{
+				file.writeShort(quantizeAndReverseEndianness(this.ftWeights[i][j], QA));
+			}
+		}
+
+		for (int i = 0; i < HIDDEN_LAYER; i++)
+		{
+			file.writeShort(quantizeAndReverseEndianness(this.ftBiases[i], QA));
+		}
+
+		for (int i = 0; i < HIDDEN_LAYER; i++)
+		{
+			file.writeShort(quantizeAndReverseEndianness(this.outputWeights[i], QB));
+		}
+
+		file.writeShort(quantizeAndReverseEndianness(this.outputBias, (short) (QA * QB)));
 	}
 }
