@@ -57,23 +57,23 @@ public class SinglePerspective
 		}
 	}
 
-	private static final float screlu(float x)
+	private static final float screlu(final float x)
 	{
 		float v = Math.max(Math.min(x, 1), 0);
 		return v * v;
 	}
 
-	private static final float screluDerivative(float x)
+	private static final float screluDerivative(final float x)
 	{
 		return (x > 0 && x < 1) ? 2 * x : 0;
 	}
 
-	private static final float sigmoid(float x)
+	private static final float sigmoid(final float x)
 	{
 		return (float) (1 / (1 + Math.exp(-x)));
 	}
 
-	private static final float sigmoidDerivative(float x)
+	private static final float sigmoidDerivative(final float x)
 	{
 		return sigmoid(x) * (1 - sigmoid(x));
 	}
@@ -104,7 +104,36 @@ public class SinglePerspective
 			this.output += this.hiddenLayer[i] * this.outputWeights[i];
 		}
 
-		this.output = sigmoid(output);
+		this.output = sigmoid(this.output);
+
+		return this.output;
+	}
+
+	public float forward2(List<Integer> activatedFeatures)
+	{
+		System.arraycopy(this.ftBiases, 0, this.hiddenLayer, 0, HIDDEN_LAYER);
+		Arrays.fill(activated, false);
+
+		for (int index : activatedFeatures)
+		{
+			activated[index] = true;
+			for (int i = 0; i < HIDDEN_LAYER; i++)
+			{
+				this.hiddenLayer[i] += this.ftWeights[index][i];
+			}
+		}
+
+		for (int i = 0; i < HIDDEN_LAYER; i++)
+		{
+			this.hiddenLayer[i] = screlu(this.hiddenLayer[i]);
+		}
+
+		this.output = outputBias;
+
+		for (int i = 0; i < HIDDEN_LAYER; i++)
+		{
+			this.output += this.hiddenLayer[i] * this.outputWeights[i];
+		}
 
 		return this.output;
 	}
@@ -112,9 +141,6 @@ public class SinglePerspective
 	public float backpropagate(List<Integer> activatedFeatures, float target, LRScheduler lrScheduler)
 	{
 		forward(activatedFeatures);
-
-		// FIXME: make this more flexible
-		target = sigmoid(target / 400);
 
 		float lr = lrScheduler.get();
 
